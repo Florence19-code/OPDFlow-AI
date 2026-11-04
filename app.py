@@ -36,8 +36,7 @@ def get_supabase():
         st.secrets["SUPABASE_URL"],
         st.secrets["SUPABASE_KEY"]
     )
-st.write("Supabase URL:", st.secrets["SUPABASE_URL"])
-st.write("Supabase client:", get_supabase().postgrest_url)
+
 # ---------------------------------
 # PATIENT PORTAL
 # ---------------------------------
