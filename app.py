@@ -23,102 +23,79 @@ st.set_page_config(
 st.markdown("""
 <style>
 
-/* Main background */
-.stApp {
-    background-color: #F4F7FB;
-}
 
-/* Main content spacing */
+/* Main dashboard content */
 .block-container {
     padding-top: 2rem;
-    padding-bottom: 2rem;
-    max-width: 1200px;
+    padding-bottom: 3rem;
+    max-width: 1400px;
 }
 
-/* Main headings */
-h1 {
-    color: #12304A !important;
-    font-weight: 750 !important;
-}
-
-h2, h3 {
-    color: #174A68 !important;
-    font-weight: 650 !important;
-}
-
-/* Paragraph text */
-p, label {
-    color: #405466;
+/* Section headings */
+h1, h2, h3 {
+    color: #173B57 !important;
+    font-weight: 700 !important;
 }
 
 /* Metric cards */
 [data-testid="stMetric"] {
-    background-color: white;
-    border: 1px solid #E2EAF1;
-    padding: 20px;
+    background: linear-gradient(135deg, #FFFFFF, #F0F7FA);
+    border: 1px solid #D6E6ED;
+    padding: 18px;
     border-radius: 14px;
-    box-shadow: 0 3px 12px rgba(20, 50, 80, 0.05);
+    box-shadow: 0 3px 10px rgba(23, 59, 87, 0.06);
 }
 
 /* Metric values */
 [data-testid="stMetricValue"] {
-    color: #087E8B;
+    color: #176B78;
     font-weight: 700;
 }
 
+/* Input fields and dropdowns */
+.stTextInput input,
+.stSelectbox div[data-baseweb="select"] {
+    border-radius: 10px;
+}
+
 /* Buttons */
-/* Light teal buttons */
-.stButton > button,
-.stDownloadButton > button {
-    background-color: #BFE9E5;
-    color: #164E52;
-    border: 1px solid #A5DAD4;
-    border-radius: 9px;
-    padding: 0.55rem 1rem;
+.stButton button,
+.stDownloadButton button {
+    border-radius: 10px;
     font-weight: 600;
-    transition: 0.2s;
+    border: 1px solid #A8D9D7;
+    transition: all 0.2s ease;
 }
 
-/* Hover effect */
-.stButton > button:hover,
-.stDownloadButton > button:hover {
-    background-color: #A5DAD4;
-    color: #123F43;
-    border: 1px solid #83C9C1;
-}
-
-/* Input fields */
-div[data-baseweb="input"] input,
-div[data-baseweb="select"] > div {
-    border-radius: 8px;
-}
-
-/* Expanders */
-[data-testid="stExpander"] {
-    background-color: white;
-    border: 1px solid #E2EAF1;
-    border-radius: 12px;
+/* Buttons on hover */
+.stButton button:hover,
+.stDownloadButton button:hover {
+    border-color: #4A9D9A;
+    transform: translateY(-1px);
 }
 
 /* Data tables */
 [data-testid="stDataFrame"] {
-    border: 1px solid #E2EAF1;
-    border-radius: 10px;
+    border: 1px solid #D8E6ED;
+    border-radius: 12px;
     overflow: hidden;
 }
 
-/* Info and success messages */
-[data-testid="stAlert"] {
-    border-radius: 10px;
+/* Expanders */
+[data-testid="stExpander"] {
+    background-color: #FFFFFF;
+    border: 1px solid #D8E6ED;
+    border-radius: 12px;
 }
 
-/* Footer caption */
-.stCaption {
-    color: #718096;
+/* Horizontal separators */
+hr {
+    border-color: #D8E6ED;
 }
-
 </style>
 """, unsafe_allow_html=True)
+
+
 APP_URL = "https://opdflow-ai-9fduheria83du5dof2vbi8.streamlit.app"
 
 # ---------------------------------
