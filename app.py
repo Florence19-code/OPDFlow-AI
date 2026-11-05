@@ -6,6 +6,7 @@ import uuid
 import qrcode
 from io import BytesIO
 from supabase import create_client
+import plotly.express as px
 
 # ---------------------------------
 # PAGE CONFIGURATION
@@ -450,6 +451,7 @@ if selected_page == "Staff Queue Dashboard":
 
                     queue_df = pd.DataFrame(queue_data)
 
+
                     # OPD ANALYTICS DASHBOARD
                     st.subheader("📈 OPD Analytics Dashboard")
 
@@ -471,42 +473,127 @@ if selected_page == "Staff Queue Dashboard":
                         f"{avg_wait} minutes"
                     )
 
-                    # Prepare charts
-                    col1, col2 = st.columns(2)
+                    # 1. BAR CHART - PATIENTS BY DEPARTMENT
+                    st.write("**Patients by Department**")
 
-                    # Patients by Department
-                    with col1:
-                        st.write("**Patients by Department**")
-
-                        department_counts = queue_df["department"].value_counts()
-
-                        st.bar_chart(
-                            department_counts,
-                            color="#4682B4"
-                        )
-
-                    # Patient Status Distribution
-                    with col2:
-                        st.write("**Patient Status Distribution**")
-
-                        status_counts = queue_df["status"].value_counts()
-
-                        st.bar_chart(
-                            status_counts,
-                            color="#9370DB"
-                        )
-
-                    # Waiting Patients by Department
-                    st.write("**Waiting Patients by Department**")
-
-                    waiting_by_department = (
-                        waiting_patients["department"].value_counts()
+                    department_counts = (
+                        queue_df["department"]
+                        .value_counts()
+                        .reset_index()
                     )
 
-                    st.bar_chart(
-                        waiting_by_department,
-                        color="#20A38A"
+                    department_counts.columns = [
+                        "Department", "Patients"
+                    ]
+
+                    fig_department = px.bar(
+                        department_counts,
+                        x="Department",
+                        y="Patients",
+                        color="Department",
+                        title="Department-wise Patient Distribution",
+                        text="Patients"
                     )
+
+                    st.plotly_chart(
+                        fig_department,
+                        use_container_width=True
+                    )
+
+                    # 2. DONUT CHART - PATIENT STATUS
+                    st.write("**Patient Status Distribution**")
+
+                    status_counts = (
+                        queue_df["status"]
+                        .value_counts()
+                        .reset_index()
+                    )
+
+                    status_counts.columns = [
+                        "Status", "Patients"
+                    ]
+
+                    fig_status = px.pie(
+                        status_counts,
+                        names="Status",
+                        values="Patients",
+                        hole=0.45,
+                        title="OPD Patient Status Distribution"
+                    )
+
+                    st.plotly_chart(
+                        fig_status,
+                        use_container_width=True
+                    )
+
+                    # 3. SCATTER CHART - QUEUE POSITION VS WAITING TIME
+                    st.write("**Queue Position vs Waiting Time**")
+
+                    fig_scatter = px.scatter(
+                        queue_df,
+                        x="queue_position",
+                        y="estimated_wait_minutes",
+                        color="status",
+                        hover_name="token_number",
+                        title="Queue Position and Estimated Waiting Time",
+                        labels={
+                            "queue_position": "Queue Position",
+                            "estimated_wait_minutes": "Estimated Wait (Minutes)",
+                            "status": "Patient Status"
+                        }
+                    )
+
+                    st.plotly_chart(
+                        fig_scatter,
+                        use_container_width=True
+                    )
+
+                    # 4. LINE CHART - PATIENT ARRIVALS OVER TIME
+                    st.write("**Patient Arrivals Over Time**")
+
+                    arrivals_df = queue_df.copy()
+
+                    arrivals_df["created_at"] = pd.to_datetime(
+                        arrivals_df["created_at"],
+                        errors="coerce",
+                        utc=True
+                    )
+
+                    arrivals_df = arrivals_df.dropna(
+                        subset=["created_at"]
+                    )
+
+                    if not arrivals_df.empty:
+
+                        arrivals_df["Arrival Hour"] = (
+                            arrivals_df["created_at"]
+                            .dt.tz_convert("Asia/Kolkata")
+                            .dt.floor("h")
+                        )
+
+                        hourly_arrivals = (
+                            arrivals_df.groupby("Arrival Hour")
+                            .size()
+                            .reset_index(name="Patients")
+                        )
+
+                        fig_arrivals = px.line(
+                            hourly_arrivals,
+                            x="Arrival Hour",
+                            y="Patients",
+                            markers=True,
+                            title="Patient Registration Trend"
+                        )
+
+                        st.plotly_chart(
+                            fig_arrivals,
+                            use_container_width=True
+                        )
+
+                    else:
+                        st.info(
+                            "Patient arrival time data is unavailable."
+                        )
 
                     # SEARCH AND FILTER PATIENTS
                     st.subheader("🔍 Search and Filter Patients")
