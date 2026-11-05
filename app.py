@@ -357,6 +357,7 @@ with st.expander("🔐 Staff Queue Dashboard"):
 
         if st.button("Refresh Queue", key="refresh_queue"):
             st.rerun()
+        
         try:
             response = (
                 get_supabase()
@@ -374,15 +375,12 @@ with st.expander("🔐 Staff Queue Dashboard"):
 
             # QUEUE SUMMARY CARDS
             total_patients = len(queue_data)
-
             waiting_count = sum(
                 1 for p in queue_data if p["status"] == "Waiting"
             )
-
             consultation_count = sum(
                 1 for p in queue_data if p["status"] == "In Consultation"
             )
-
             completed_count = sum(
                 1 for p in queue_data if p["status"] == "Completed"
             )
@@ -393,21 +391,17 @@ with st.expander("🔐 Staff Queue Dashboard"):
 
             with col1:
                 st.metric("Total Patients", total_patients)
-
             with col2:
                 st.metric("Waiting", waiting_count)
-
             with col3:
                 st.metric("In Consultation", consultation_count)
-
             with col4:
                 st.metric("Completed", completed_count)
 
-         if queue_data:
+            if queue_data:
                 queue_df = pd.DataFrame(queue_data)
 
                 st.subheader("Registered Patient Queue")
-
                 st.dataframe(
                     queue_df,
                     use_container_width=True,
@@ -456,6 +450,8 @@ with st.expander("🔐 Staff Queue Dashboard"):
                         mime="image/png",
                         key="download_reprinted_qr"
                     )
+
+                # UPDATE PATIENT STATUS
                 st.subheader("Update Patient Status")
 
                 selected_token = st.selectbox(
@@ -470,11 +466,8 @@ with st.expander("🔐 Staff Queue Dashboard"):
                     key="new_patient_status"
                 )
 
-                
                 if st.button("Update Patient Status"):
-
                     try:
-
                         selected_patient = next(
                             p for p in queue_data
                             if p["token_number"] == selected_token
@@ -482,10 +475,7 @@ with st.expander("🔐 Staff Queue Dashboard"):
 
                         supabase = get_supabase()
 
-                        # Update selected patient's status
-                        update_data = {
-                            "status": new_status
-                        }
+                        update_data = {"status": new_status}
 
                         if new_status != "Waiting":
                             update_data["queue_position"] = 0
@@ -497,7 +487,6 @@ with st.expander("🔐 Staff Queue Dashboard"):
                             .execute()
                         )
 
-                        # Recalculate remaining waiting patients
                         updated_count = recalculate_queue_positions(
                             supabase,
                             selected_patient["department"]
@@ -506,17 +495,22 @@ with st.expander("🔐 Staff Queue Dashboard"):
                         st.success(
                             f"{selected_token} status updated to {new_status}!"
                         )
-
                         st.info(
-                            f"{updated_count} waiting patients now have updated queue positions."
+                            f"{updated_count} waiting patients now have "
+                            "updated queue positions and waiting times."
                         )
-
                         st.rerun()
 
                     except Exception as e:
-
                         st.error("Unable to update patient status.")
                         st.exception(e)
+
+            else:
+                st.info("No patients registered yet.")
+
+        except Exception as e:
+            st.error("Unable to load the patient queue.")
+            st.exception(e)
 
 
                     try:
