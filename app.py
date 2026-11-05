@@ -403,7 +403,7 @@ with st.expander("🔐 Staff Queue Dashboard"):
             with col4:
                 st.metric("Completed", completed_count)
 
-                        if queue_data:
+         if queue_data:
                 queue_df = pd.DataFrame(queue_data)
 
                 st.subheader("Registered Patient Queue")
