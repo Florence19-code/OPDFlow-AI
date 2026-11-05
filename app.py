@@ -293,7 +293,54 @@ with st.expander("🔐 Staff Queue Dashboard"):
                     key="new_patient_status"
                 )
 
+                
                 if st.button("Update Patient Status"):
+
+                    try:
+
+                        selected_patient = next(
+                            p for p in queue_data
+                            if p["token_number"] == selected_token
+                        )
+
+                        supabase = get_supabase()
+
+                        # Update selected patient's status
+                        update_data = {
+                            "status": new_status
+                        }
+
+                        if new_status != "Waiting":
+                            update_data["queue_position"] = 0
+
+                        (
+                            supabase.table("queue_entries")
+                            .update(update_data)
+                            .eq("token_number", selected_token)
+                            .execute()
+                        )
+
+                        # Recalculate remaining waiting patients
+                        updated_count = recalculate_queue_positions(
+                            supabase,
+                            selected_patient["department"]
+                        )
+
+                        st.success(
+                            f"{selected_token} status updated to {new_status}!"
+                        )
+
+                        st.info(
+                            f"{updated_count} waiting patients now have updated queue positions."
+                        )
+
+                        st.rerun()
+
+                    except Exception as e:
+
+                        st.error("Unable to update patient status.")
+                        st.exception(e)
+
 
                     try:
                         (
