@@ -621,21 +621,21 @@ if selected_page == "Staff Queue Dashboard":
                         )
 
 
-                # UPDATE PATIENT STATUS
-                st.subheader("Update Patient Status")
+            
+                    # UPDATE PATIENT STATUS
+                    st.subheader("Update Patient Status")
 
-                selected_token = st.selectbox(
-                    "Select Patient Token",
-                    [p["token_number"] for p in queue_data],
-                    key="selected_patient_token"
-                )
+                    selected_token = st.selectbox(
+                        "Select Patient Token",
+                        [p["token_number"] for p in queue_data],
+                        key="selected_patient_token"
+                    )
 
-                new_status = st.selectbox(
-                    "Select New Status",
-                    ["Waiting", "In Consultation", "Completed"],
-                    key="new_patient_status"
-                )
-
+                    new_status = st.selectbox(
+                        "Select New Status",
+                        ["Waiting", "In Consultation", "Completed"],
+                        key="new_patient_status"
+                    )
 
                     if st.button("Update Patient Status"):
                         try:
@@ -692,66 +692,6 @@ if selected_page == "Prediction & Registration":
     st.caption(
         "Enter patient details to predict waiting time and generate a queue token."
     )
-
-
-    patient_name = st.text_input("Patient Name")
-
-    col1, col2 = st.columns(2)
-
-    with col1:
-
-        department = st.selectbox(
-            "Select Department",
-            [
-                "General Medicine",
-                "Cardiology",
-                "Orthopaedics",
-                "Paediatrics",
-                "Dermatology",
-                "ENT"
-            ]
-        )
-
-        arrival_hour = st.slider(
-            "Arrival Hour",
-            8, 19, 11
-        )
-
-        day_of_week = st.selectbox(
-            "Day of the Week",
-            [
-                "Monday", "Tuesday", "Wednesday",
-                "Thursday", "Friday", "Saturday", "Sunday"
-            ]
-        )
-
-        appointment_type = st.selectbox(
-            "Appointment Type",
-            ["Appointment", "Walk-in"]
-        )
-
-    with col2:
-
-        patients_waiting = st.number_input(
-            "Number of Patients Waiting",
-            min_value=0,
-            max_value=100,
-            value=10
-        )
-
-        doctors_available = st.number_input(
-            "Number of Doctors Available",
-            min_value=1,
-            max_value=10,
-            value=2
-        )
-
-        avg_consultation_time = st.number_input(
-            "Average Consultation Time (minutes)",
-            min_value=5,
-            max_value=60,
-            value=15
-        )
 
     # MODEL INPUT
 
