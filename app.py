@@ -225,16 +225,56 @@ if patient_id:
 # MANAGEMENT DASHBOARD
 # ---------------------------------
 
-st.title("🏥 OPDFlow AI")
+# ---------------------------------
+# DASHBOARD WELCOME BANNER
+# ---------------------------------
 
-st.subheader(
-    "OPD Waiting-Time Prediction and Congestion Management"
-)
+st.markdown("""
+<div style="
+    background: linear-gradient(120deg, #E8F5F7, #F2F8FC);
+    padding: 28px 32px;
+    border-radius: 16px;
+    border: 1px solid #D5E9ED;
+    margin-bottom: 25px;
+">
 
-st.write(
-    "Enter the outpatient department details below "
-    "to predict the patient's expected waiting time."
-)
+    <div style="
+        color: #087E8B;
+        font-size: 14px;
+        font-weight: 600;
+        letter-spacing: 1px;
+    ">
+        HOSPITAL MANAGEMENT SYSTEM
+    </div>
+
+    <h1 style="
+        color: #173B57;
+        font-size: 34px;
+        margin: 8px 0;
+    ">
+        🏥 OPDFlow AI
+    </h1>
+
+    <div style="
+        color: #426477;
+        font-size: 18px;
+        font-weight: 500;
+    ">
+        OPD Waiting-Time Prediction & Congestion Management
+    </div>
+
+    <p style="
+        color: #607D8B;
+        font-size: 14px;
+        margin-top: 12px;
+        margin-bottom: 0;
+    ">
+        Monitor patient queues, predict waiting times and
+        manage outpatient department operations efficiently.
+    </p>
+
+</div>
+""", unsafe_allow_html=True)
 
 # ---------------------------------
 # AUTOMATIC QUEUE POSITION UPDATE
