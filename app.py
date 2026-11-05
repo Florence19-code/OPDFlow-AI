@@ -666,239 +666,241 @@ with st.expander("🔐 Staff Queue Dashboard"):
 
         
 
-st.header("Patient Registration")
+if selected_page == "Prediction & Registration":
 
-patient_name = st.text_input("Patient Name")
+    st.header("🧑‍⚕️ Patient Registration")
+    st.caption("Enter patient details to predict waiting time and generate a queue token.")
 
-col1, col2 = st.columns(2)
+    patient_name = st.text_input("Patient Name")
 
-with col1:
+    col1, col2 = st.columns(2)
 
-    department = st.selectbox(
-        "Select Department",
-        [
-            "General Medicine",
-            "Cardiology",
-            "Orthopaedics",
-            "Paediatrics",
-            "Dermatology",
-            "ENT"
-        ]
-    )
+    with col1:
 
-    arrival_hour = st.slider(
-        "Arrival Hour",
-        8, 19, 11
-    )
+        department = st.selectbox(
+            "Select Department",
+            [
+                "General Medicine",
+                "Cardiology",
+                "Orthopaedics",
+                "Paediatrics",
+                "Dermatology",
+                "ENT"
+            ]
+        )
 
-    day_of_week = st.selectbox(
-        "Day of the Week",
-        [
-            "Monday", "Tuesday", "Wednesday",
-            "Thursday", "Friday", "Saturday", "Sunday"
-        ]
-    )
+        arrival_hour = st.slider(
+            "Arrival Hour",
+            8, 19, 11
+        )
 
-    appointment_type = st.selectbox(
-        "Appointment Type",
-        ["Appointment", "Walk-in"]
-    )
+        day_of_week = st.selectbox(
+            "Day of the Week",
+            [
+                "Monday", "Tuesday", "Wednesday",
+                "Thursday", "Friday", "Saturday", "Sunday"
+            ]
+        )
 
-with col2:
+        appointment_type = st.selectbox(
+            "Appointment Type",
+            ["Appointment", "Walk-in"]
+        )
 
-    patients_waiting = st.number_input(
-        "Number of Patients Waiting",
-        min_value=0,
-        max_value=100,
-        value=10
-    )
+    with col2:
 
-    doctors_available = st.number_input(
-        "Number of Doctors Available",
-        min_value=1,
-        max_value=10,
-        value=2
-    )
+        patients_waiting = st.number_input(
+            "Number of Patients Waiting",
+            min_value=0,
+            max_value=100,
+            value=10
+        )
 
-    avg_consultation_time = st.number_input(
-        "Average Consultation Time (minutes)",
-        min_value=5,
-        max_value=60,
-        value=15
-    )
+        doctors_available = st.number_input(
+            "Number of Doctors Available",
+            min_value=1,
+            max_value=10,
+            value=2
+        )
 
-# ---------------------------------
-# MODEL INPUT
-# ---------------------------------
+        avg_consultation_time = st.number_input(
+            "Average Consultation Time (minutes)",
+            min_value=5,
+            max_value=60,
+            value=15
+        )
 
-peak_hour = 1 if 9 <= arrival_hour <= 12 else 0
+    # MODEL INPUT
 
-weekend = 1 if day_of_week in [
-    "Saturday", "Sunday"
-] else 0
+    peak_hour = 1 if 9 <= arrival_hour <= 12 else 0
 
-input_data = pd.DataFrame([{
-    "Arrival_Hour": arrival_hour,
-    "Department": department,
-    "Day_of_Week": day_of_week,
-    "Appointment_Type": appointment_type,
-    "Patients_Waiting": patients_waiting,
-    "Doctors_Available": doctors_available,
-    "Avg_Consultation_Time": avg_consultation_time,
-    "Peak_Hour": peak_hour,
-    "Weekend": weekend
-}])
+    weekend = 1 if day_of_week in [
+        "Saturday", "Sunday"
+    ] else 0
 
-# ---------------------------------
-# PREDICTION FUNCTION
-# ---------------------------------
+    input_data = pd.DataFrame([{
+        "Arrival_Hour": arrival_hour,
+        "Department": department,
+        "Day_of_Week": day_of_week,
+        "Appointment_Type": appointment_type,
+        "Patients_Waiting": patients_waiting,
+        "Doctors_Available": doctors_available,
+        "Avg_Consultation_Time": avg_consultation_time,
+        "Peak_Hour": peak_hour,
+        "Weekend": weekend
+    }])
 
-def predict_wait():
+    # PREDICTION FUNCTION
 
-    prediction = model.predict(input_data)[0]
+    def predict_wait():
 
-    if prediction < 20:
-        congestion = "Low"
-    elif prediction <= 45:
-        congestion = "Moderate"
-    else:
-        congestion = "High"
+        prediction = model.predict(input_data)[0]
 
-    return max(0, float(prediction)), congestion
+        if prediction < 20:
+            congestion = "Low"
+        elif prediction <= 45:
+            congestion = "Moderate"
+        else:
+            congestion = "High"
 
-# ---------------------------------
-# PREDICT WAITING TIME
-# ---------------------------------
+        return max(0, float(prediction)), congestion
 
-if st.button("Predict Waiting Time"):
+    # PREDICT WAITING TIME
 
-    waiting_time, congestion = predict_wait()
+    st.divider()
 
-    st.subheader("Prediction Results")
+    if st.button("Predict Waiting Time"):
 
-    st.metric(
-        "Predicted Waiting Time",
-        f"{waiting_time:.1f} minutes"
-    )
+        waiting_time, congestion = predict_wait()
 
-    st.write("**Congestion Level:**", congestion)
+        st.subheader("Prediction Results")
 
-# ---------------------------------
-# REGISTER PATIENT AND GENERATE QR
-# ---------------------------------
+        result_col1, result_col2 = st.columns(2)
 
-if st.button("Register Patient & Generate QR Code"):
-
-    if not patient_name.strip():
-
-        st.warning("Please enter the patient's name.")
-
-    else:
-
-        try:
-
-            supabase = get_supabase()
-
-            waiting_time, congestion = predict_wait()
-
-            # Generate unique token and patient ID
-            token_number = "OPD-" + uuid.uuid4().hex[:6].upper()
-
-            public_id = str(uuid.uuid4())
-
-            # Calculate queue position
-            existing = (
-                supabase.table("queue_entries")
-                .select("id")
-                .eq("department", department)
-                .eq("status", "Waiting")
-                .execute()
-            )
-
-            queue_position = len(existing.data or []) + 1
-
-            # Save patient record
-            patient_record = {
-                "public_id": public_id,
-                "token_number": token_number,
-                "patient_name": patient_name.strip(),
-                "department": department,
-                "queue_position": queue_position,
-                "estimated_wait_minutes": round(waiting_time),
-                "avg_consultation_time": int(avg_consultation_time),
-"doctors_available": int(doctors_available),
-                "status": "Waiting"
-            }
-
-            supabase.table(
-                "queue_entries"
-            ).insert(patient_record).execute()
-            recalculate_queue_positions(supabase, department)
-            # Create patient status URL
-            patient_url = (
-                f"{APP_URL}/?patient={public_id}"
-            )
-
-            # Generate QR code
-            qr = qrcode.QRCode(
-                box_size=8,
-                border=4
-            )
-
-            qr.add_data(patient_url)
-            qr.make(fit=True)
-
-            qr_image = qr.make_image(
-                fill_color="black",
-                back_color="white"
-            )
-
-            buffer = BytesIO()
-            qr_image.save(buffer, format="PNG")
-
-            # Display registration result
-            st.success("Patient registered successfully!")
-
-            st.subheader("Patient Token")
-
+        with result_col1:
             st.metric(
-                "Token Number",
-                token_number
-            )
-
-            st.write("**Department:**", department)
-            st.write("**Queue Position:**", queue_position)
-
-            st.metric(
-                "Estimated Waiting Time",
+                "Predicted Waiting Time",
                 f"{waiting_time:.1f} minutes"
             )
 
-            st.write("**Congestion Level:**", congestion)
-
-            st.subheader("Patient QR Code")
-
-            st.image(
-                buffer.getvalue(),
-                width=250
+        with result_col2:
+            st.metric(
+                "Congestion Level",
+                congestion
             )
 
-            st.info(
-                "Ask the patient to scan this QR code "
-                "to view their queue status."
-            )
+    # REGISTER PATIENT AND GENERATE QR
 
-            st.download_button(
-                "Download Patient QR Code",
-                data=buffer.getvalue(),
-                file_name=f"{token_number}.png",
-                mime="image/png"
-            )
+    st.divider()
 
-        except Exception as e:
+    if st.button("Register Patient & Generate QR Code"):
 
-            st.error("Patient registration failed.")
-            st.exception(e)
+        if not patient_name.strip():
+
+            st.warning("Please enter the patient's name.")
+
+        else:
+
+            try:
+
+                supabase = get_supabase()
+
+                waiting_time, congestion = predict_wait()
+
+                token_number = "OPD-" + uuid.uuid4().hex[:6].upper()
+
+                public_id = str(uuid.uuid4())
+
+                existing = (
+                    supabase.table("queue_entries")
+                    .select("id")
+                    .eq("department", department)
+                    .eq("status", "Waiting")
+                    .execute()
+                )
+
+                queue_position = len(existing.data or []) + 1
+
+                patient_record = {
+                    "public_id": public_id,
+                    "token_number": token_number,
+                    "patient_name": patient_name.strip(),
+                    "department": department,
+                    "queue_position": queue_position,
+                    "estimated_wait_minutes": round(waiting_time),
+                    "avg_consultation_time": int(avg_consultation_time),
+                    "doctors_available": int(doctors_available),
+                    "status": "Waiting"
+                }
+
+                supabase.table(
+                    "queue_entries"
+                ).insert(patient_record).execute()
+
+                recalculate_queue_positions(supabase, department)
+
+                patient_url = (
+                    f"{APP_URL}/?patient={public_id}"
+                )
+
+                qr = qrcode.QRCode(
+                    box_size=8,
+                    border=4
+                )
+
+                qr.add_data(patient_url)
+                qr.make(fit=True)
+
+                qr_image = qr.make_image(
+                    fill_color="black",
+                    back_color="white"
+                )
+
+                buffer = BytesIO()
+                qr_image.save(buffer, format="PNG")
+
+                st.success("Patient registered successfully!")
+
+                st.subheader("Patient Token")
+
+                st.metric(
+                    "Token Number",
+                    token_number
+                )
+
+                st.write("**Department:**", department)
+                st.write("**Queue Position:**", queue_position)
+
+                st.metric(
+                    "Estimated Waiting Time",
+                    f"{waiting_time:.1f} minutes"
+                )
+
+                st.write("**Congestion Level:**", congestion)
+
+                st.subheader("Patient QR Code")
+
+                st.image(
+                    buffer.getvalue(),
+                    width=250
+                )
+
+                st.info(
+                    "Ask the patient to scan this QR code "
+                    "to view their queue status."
+                )
+
+                st.download_button(
+                    "Download Patient QR Code",
+                    data=buffer.getvalue(),
+                    file_name=f"{token_number}.png",
+                    mime="image/png"
+                )
+
+            except Exception as e:
+
+                st.error("Patient registration failed.")
+                st.exception(e)
 
 # ---------------------------------
 # PROJECT LIMITATION
