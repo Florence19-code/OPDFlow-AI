@@ -165,10 +165,10 @@ with st.expander("🔐 Staff Queue Dashboard"):
                 get_supabase()
                 .table("queue_entries")
                 .select(
-                    "token_number, patient_name, department, "
-                    "queue_position, estimated_wait_minutes, "
-                    "status, created_at"
-                )
+    "public_id, token_number, patient_name, department, "
+    "queue_position, estimated_wait_minutes, "
+    "status, created_at"
+)
                 .order("created_at")
                 .execute()
             )
