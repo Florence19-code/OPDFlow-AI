@@ -631,58 +631,63 @@ if selected_page == "Staff Queue Dashboard":
                     key="new_patient_status"
                 )
 
-                if st.button("Update Patient Status"):
-                    try:
-                        selected_patient = next(
-                            p for p in queue_data
-                            if p["token_number"] == selected_token
-                        )
 
-                        supabase = get_supabase()
+                    if st.button("Update Patient Status"):
+                        try:
+                            selected_patient = next(
+                                p for p in queue_data
+                                if p["token_number"] == selected_token
+                            )
 
-                        update_data = {"status": new_status}
+                            supabase = get_supabase()
 
-                        if new_status != "Waiting":
-                            update_data["queue_position"] = 0
+                            update_data = {"status": new_status}
 
-                        (
-                            supabase.table("queue_entries")
-                            .update(update_data)
-                            .eq("token_number", selected_token)
-                            .execute()
-                        )
+                            if new_status != "Waiting":
+                                update_data["queue_position"] = 0
 
-                        updated_count = recalculate_queue_positions(
-                            supabase,
-                            selected_patient["department"]
-                        )
+                            (
+                                supabase.table("queue_entries")
+                                .update(update_data)
+                                .eq("token_number", selected_token)
+                                .execute()
+                            )
 
-                        st.success(
-                            f"{selected_token} status updated to {new_status}!"
-                        )
-                        st.info(
-                            f"{updated_count} waiting patients now have "
-                            "updated queue positions and waiting times."
-                        )
-                        st.rerun()
+                            updated_count = recalculate_queue_positions(
+                                supabase,
+                                selected_patient["department"]
+                            )
 
-                    except Exception as e:
-                        st.error("Unable to update patient status.")
-                        st.exception(e)
+                            st.success(
+                                f"{selected_token} status updated to {new_status}!"
+                            )
 
-            else:
-                st.info("No patients registered yet.")
+                            st.info(
+                                f"{updated_count} waiting patients now have "
+                                "updated queue positions and waiting times."
+                            )
 
-        except Exception as e:
-            st.error("Unable to load the patient queue.")
-            st.exception(e)
+                            st.rerun()
 
-        
+                        except Exception as e:
+                            st.error("Unable to update patient status.")
+                            st.exception(e)
+
+                else:
+                    st.info("No patients registered yet.")
+
+            except Exception as e:
+                st.error("Unable to load the patient queue.")
+                st.exception(e)
+
 
 if selected_page == "Prediction & Registration":
 
     st.header("🧑‍⚕️ Patient Registration")
-    st.caption("Enter patient details to predict waiting time and generate a queue token.")
+    st.caption(
+        "Enter patient details to predict waiting time and generate a queue token."
+    )
+
 
     patient_name = st.text_input("Patient Name")
 
