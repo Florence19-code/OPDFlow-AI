@@ -366,200 +366,212 @@ def recalculate_queue_positions(supabase, department):
 if "admin_authenticated" not in st.session_state:
     st.session_state.admin_authenticated = False
 
+
 if selected_page == "Staff Queue Dashboard":
     with st.expander("🔐 Staff Queue Dashboard"):
 
-    if not st.session_state.admin_authenticated:
+        if not st.session_state.admin_authenticated:
 
-        admin_password = st.text_input(
-            "Enter Staff Password",
-            type="password",
-            key="admin_password_input"
-        )
-
-        if st.button("Staff Login", key="staff_login"):
-
-            if admin_password == st.secrets["ADMIN_PASSWORD"]:
-                st.session_state.admin_authenticated = True
-                st.rerun()
-            else:
-                st.error("Incorrect password.")
-
-    else:
-
-        st.success("Staff login successful!")
-
-        if st.button("Staff Logout", key="staff_logout"):
-            st.session_state.admin_authenticated = False
-            st.rerun()
-
-        st.subheader("Registered Patient Queue")
-
-        if st.button("Refresh Queue", key="refresh_queue"):
-            st.rerun()
-        
-        try:
-            response = (
-                get_supabase()
-                .table("queue_entries")
-                .select(
-                    "public_id, token_number, patient_name, department, "
-                    "queue_position, estimated_wait_minutes, "
-                    "status, created_at"
-                )
-                .order("created_at")
-                .execute()
+            admin_password = st.text_input(
+                "Enter Staff Password",
+                type="password",
+                key="admin_password_input"
             )
 
-            queue_data = response.data or []
+            if st.button("Staff Login", key="staff_login"):
 
-            # QUEUE SUMMARY CARDS
-            total_patients = len(queue_data)
-            waiting_count = sum(
-                1 for p in queue_data if p["status"] == "Waiting"
-            )
-            consultation_count = sum(
-                1 for p in queue_data if p["status"] == "In Consultation"
-            )
-            completed_count = sum(
-                1 for p in queue_data if p["status"] == "Completed"
-            )
-
-            st.subheader("📊 OPD Overview")
-
-            col1, col2, col3, col4 = st.columns(4)
-
-            with col1:
-                st.metric("Total Patients", total_patients)
-            with col2:
-                st.metric("Waiting", waiting_count)
-            with col3:
-                st.metric("In Consultation", consultation_count)
-            with col4:
-                st.metric("Completed", completed_count)
-
-            if queue_data:
-                queue_df = pd.DataFrame(queue_data)
-                                # OPD ANALYTICS DASHBOARD
-                st.subheader("📈 OPD Analytics Dashboard")
-
-                # Average waiting time
-                waiting_patients = queue_df[
-                    queue_df["status"] == "Waiting"
-                ]
-
-                if not waiting_patients.empty:
-                    avg_wait = round(
-                        waiting_patients["estimated_wait_minutes"].mean(),
-                        1
-                    )
+                if admin_password == st.secrets["ADMIN_PASSWORD"]:
+                    st.session_state.admin_authenticated = True
+                    st.rerun()
                 else:
-                    avg_wait = 0
+                    st.error("Incorrect password.")
 
-                st.metric(
-                    "Average Estimated Waiting Time",
-                    f"{avg_wait} minutes"
+        else:
+
+            st.success("Staff login successful!")
+
+            if st.button("Staff Logout", key="staff_logout"):
+                st.session_state.admin_authenticated = False
+                st.rerun()
+
+            st.subheader("Registered Patient Queue")
+
+            if st.button("Refresh Queue", key="refresh_queue"):
+                st.rerun()
+
+            try:
+                response = (
+                    get_supabase()
+                    .table("queue_entries")
+                    .select(
+                        "public_id, token_number, patient_name, department, "
+                        "queue_position, estimated_wait_minutes, "
+                        "status, created_at"
+                    )
+                    .order("created_at")
+                    .execute()
                 )
 
-                           # Prepare charts
-                col1, col2 = st.columns(2)
+                queue_data = response.data or []
 
-                # Patients by Department
+                # KEEP THE REST OF YOUR EXISTING
+                # DASHBOARD CODE HERE, INSIDE THIS try BLOCK
+
+                # QUEUE SUMMARY CARDS
+                total_patients = len(queue_data)
+
+                waiting_count = sum(
+                    1 for p in queue_data if p["status"] == "Waiting"
+                )
+                consultation_count = sum(
+                    1 for p in queue_data if p["status"] == "In Consultation"
+                )
+                completed_count = sum(
+                    1 for p in queue_data if p["status"] == "Completed"
+                )
+
+                st.subheader("📊 OPD Overview")
+
+                col1, col2, col3, col4 = st.columns(4)
+
                 with col1:
-                    st.write("**Patients by Department**")
+                    st.metric("Total Patients", total_patients)
 
-                    department_counts = queue_df["department"].value_counts()
-
-                    st.bar_chart(
-                        department_counts,
-                        color="#4682B4"
-                    )
-
-                # Patient Status Distribution
                 with col2:
-                    st.write("**Patient Status Distribution**")
+                    st.metric("Waiting", waiting_count)
 
-                    status_counts = queue_df["status"].value_counts()
+                with col3:
+                    st.metric("In Consultation", consultation_count)
+
+                with col4:
+                    st.metric("Completed", completed_count)
+
+                if queue_data:
+
+                    queue_df = pd.DataFrame(queue_data)
+
+                    # OPD ANALYTICS DASHBOARD
+                    st.subheader("📈 OPD Analytics Dashboard")
+
+                    # Average waiting time
+                    waiting_patients = queue_df[
+                        queue_df["status"] == "Waiting"
+                    ]
+
+                    if not waiting_patients.empty:
+                        avg_wait = round(
+                            waiting_patients["estimated_wait_minutes"].mean(),
+                            1
+                        )
+                    else:
+                        avg_wait = 0
+
+                    st.metric(
+                        "Average Estimated Waiting Time",
+                        f"{avg_wait} minutes"
+                    )
+
+                    # Prepare charts
+                    col1, col2 = st.columns(2)
+
+                    # Patients by Department
+                    with col1:
+                        st.write("**Patients by Department**")
+
+                        department_counts = queue_df["department"].value_counts()
+
+                        st.bar_chart(
+                            department_counts,
+                            color="#4682B4"
+                        )
+
+                    # Patient Status Distribution
+                    with col2:
+                        st.write("**Patient Status Distribution**")
+
+                        status_counts = queue_df["status"].value_counts()
+
+                        st.bar_chart(
+                            status_counts,
+                            color="#9370DB"
+                        )
+
+                    # Waiting Patients by Department
+                    st.write("**Waiting Patients by Department**")
+
+                    waiting_by_department = (
+                        waiting_patients["department"].value_counts()
+                    )
 
                     st.bar_chart(
-                        status_counts,
-                        color="#9370DB"
+                        waiting_by_department,
+                        color="#20A38A"
                     )
 
-                # Waiting Patients by Department
-                st.write("**Waiting Patients by Department**")
+                    # SEARCH AND FILTER PATIENTS
+                    st.subheader("🔍 Search and Filter Patients")
 
-                waiting_by_department = waiting_patients["department"].value_counts()
-
-                st.bar_chart(
-                    waiting_by_department,
-                    color="#20A38A"
-                )
-
-                # Registered Patient Queue
-                   # SEARCH AND FILTER PATIENTS
-                st.subheader("🔍 Search and Filter Patients")
-
-                search_text = st.text_input(
-                    "Search by token, patient name or department",
-                    placeholder="Enter token number, name or department..."
-                )
-
-                filter_col1, filter_col2 = st.columns(2)
-
-                with filter_col1:
-                    selected_department = st.selectbox(
-                        "Filter by Department",
-                        ["All"] + sorted(
-                            queue_df["department"].dropna().unique().tolist()
-                        ),
-                        key="filter_department"
+                    search_text = st.text_input(
+                        "Search by token, patient name or department",
+                        placeholder="Enter token number, name or department..."
                     )
 
-                with filter_col2:
-                    selected_status = st.selectbox(
-                        "Filter by Status",
-                        ["All", "Waiting", "In Consultation", "Completed"],
-                        key="filter_status"
-                    )
+                    filter_col1, filter_col2 = st.columns(2)
 
-                filtered_df = queue_df.copy()
-
-                if search_text:
-                    search_mask = (
-                        filtered_df["token_number"].astype(str).str.contains(
-                            search_text, case=False, na=False
+                    with filter_col1:
+                        selected_department = st.selectbox(
+                            "Filter by Department",
+                            ["All"] + sorted(
+                                queue_df["department"].dropna().unique().tolist()
+                            ),
+                            key="filter_department"
                         )
-                        | filtered_df["patient_name"].astype(str).str.contains(
-                            search_text, case=False, na=False
+
+                    with filter_col2:
+                        selected_status = st.selectbox(
+                            "Filter by Status",
+                            ["All", "Waiting", "In Consultation", "Completed"],
+                            key="filter_status"
                         )
-                        | filtered_df["department"].astype(str).str.contains(
-                            search_text, case=False, na=False
+
+                    filtered_df = queue_df.copy()
+
+                    if search_text:
+                        search_mask = (
+                            filtered_df["token_number"].astype(str).str.contains(
+                                search_text, case=False, na=False
+                            )
+                            | filtered_df["patient_name"].astype(str).str.contains(
+                                search_text, case=False, na=False
+                            )
+                            | filtered_df["department"].astype(str).str.contains(
+                                search_text, case=False, na=False
+                            )
                         )
+
+                        filtered_df = filtered_df[search_mask]
+
+                    if selected_department != "All":
+                        filtered_df = filtered_df[
+                            filtered_df["department"] == selected_department
+                        ]
+
+                    if selected_status != "All":
+                        filtered_df = filtered_df[
+                            filtered_df["status"] == selected_status
+                        ]
+
+                    st.subheader("Registered Patient Queue")
+
+                    st.caption(
+                        f"Showing {len(filtered_df)} of {len(queue_df)} patients"
                     )
-                    filtered_df = filtered_df[search_mask]
 
-                if selected_department != "All":
-                    filtered_df = filtered_df[
-                        filtered_df["department"] == selected_department
-                    ]
-
-                if selected_status != "All":
-                    filtered_df = filtered_df[
-                        filtered_df["status"] == selected_status
-                    ]
-
-                st.subheader("Registered Patient Queue")
-
-                st.caption(
-                    f"Showing {len(filtered_df)} of {len(queue_df)} patients"
-                )
-
-                st.dataframe(
-                    filtered_df,
-                    use_container_width=True,
-                    hide_index=True
-                )
+                    st.dataframe(
+                        filtered_df,
+                        use_container_width=True,
+                        hide_index=True
+                    )
 
                 # RESHOW PATIENT QR CODE
                 st.subheader("Reshow Patient QR Code")
