@@ -267,26 +267,26 @@ with st.sidebar:
 # ---------------------------------
 # DASHBOARD WELCOME BANNER
 # ---------------------------------
+if selected_page == "Overview":
+    st.markdown("""
+    <div style="background-color:#E8F5F7;
+                padding:25px;
+                border-radius:15px;
+                border:1px solid #D5E9ED;">
 
-st.markdown("""
-<div style="background-color:#E8F5F7;
-            padding:25px;
-            border-radius:15px;
-            border:1px solid #D5E9ED;">
+    <h1 style="color:#173B57;">🏥 OPDFlow AI</h1>
 
-<h1 style="color:#173B57;">🏥 OPDFlow AI</h1>
+    <h3 style="color:#426477;">
+    OPD Waiting-Time Prediction & Congestion Management
+    </h3>
 
-<h3 style="color:#426477;">
-OPD Waiting-Time Prediction & Congestion Management
-</h3>
+    <p style="color:#607D8B;">
+    Monitor patient queues, predict waiting times and manage
+    outpatient department operations efficiently.
+    </p>
 
-<p style="color:#607D8B;">
-Monitor patient queues, predict waiting times and manage
-outpatient department operations efficiently.
-</p>
-
-</div>
-""", unsafe_allow_html=True)
+    </div>
+    """, unsafe_allow_html=True)
 # ---------------------------------
 # AUTOMATIC QUEUE POSITION UPDATE
 # ---------------------------------
