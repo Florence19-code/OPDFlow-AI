@@ -694,6 +694,10 @@ if selected_page == "Prediction & Registration":
     )
 
     # MODEL INPUT
+arrival_hour = st.slider(
+    "Arrival Hour",
+    8, 19, 11
+)
 
     peak_hour = 1 if 9 <= arrival_hour <= 12 else 0
 
