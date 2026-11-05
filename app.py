@@ -92,6 +92,43 @@ h1, h2, h3 {
 hr {
     border-color: #D8E6ED;
 }
+
+/* SIDEBAR DESIGN */
+[data-testid="stSidebar"] {
+    background-color: #173B57;
+    border-right: 1px solid #D5E9ED;
+}
+
+/* Sidebar headings */
+[data-testid="stSidebar"] h1,
+[data-testid="stSidebar"] h2,
+[data-testid="stSidebar"] h3 {
+    color: #FFFFFF !important;
+}
+
+/* Sidebar text */
+[data-testid="stSidebar"] p,
+[data-testid="stSidebar"] label {
+    color: #E4F0F5 !important;
+}
+
+/* Sidebar radio navigation */
+[data-testid="stSidebar"] .stRadio label {
+    background-color: transparent;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+/* Sidebar navigation hover */
+[data-testid="stSidebar"] .stRadio label:hover {
+    background-color: #315C75;
+}
+
+/* Sidebar divider */
+[data-testid="stSidebar"] hr {
+    border-color: #547287;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
