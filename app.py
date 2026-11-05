@@ -372,7 +372,42 @@ with st.expander("🔐 Staff Queue Dashboard"):
             )
 
             queue_data = response.data or []
+# ---------------------------------
+# QUEUE SUMMARY CARDS
+# ---------------------------------
 
+total_patients = len(queue_data)
+
+waiting_count = sum(
+    1 for p in queue_data
+    if p["status"] == "Waiting"
+)
+
+consultation_count = sum(
+    1 for p in queue_data
+    if p["status"] == "In Consultation"
+)
+
+completed_count = sum(
+    1 for p in queue_data
+    if p["status"] == "Completed"
+)
+
+st.subheader("📊 OPD Overview")
+
+col1, col2, col3, col4 = st.columns(4)
+
+with col1:
+    st.metric("Total Patients", total_patients)
+
+with col2:
+    st.metric("Waiting", waiting_count)
+
+with col3:
+    st.metric("In Consultation", consultation_count)
+
+with col4:
+    st.metric("Completed", completed_count)
             if queue_data:
 
                 queue_df = pd.DataFrame(queue_data)
