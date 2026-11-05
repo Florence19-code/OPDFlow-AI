@@ -400,6 +400,59 @@ with st.expander("🔐 Staff Queue Dashboard"):
 
             if queue_data:
                 queue_df = pd.DataFrame(queue_data)
+                                # OPD ANALYTICS DASHBOARD
+                st.subheader("📈 OPD Analytics Dashboard")
+
+                # Average waiting time
+                waiting_patients = queue_df[
+                    queue_df["status"] == "Waiting"
+                ]
+
+                if not waiting_patients.empty:
+                    avg_wait = round(
+                        waiting_patients["estimated_wait_minutes"].mean(),
+                        1
+                    )
+                else:
+                    avg_wait = 0
+
+                st.metric(
+                    "Average Estimated Waiting Time",
+                    f"{avg_wait} minutes"
+                )
+
+                # Prepare charts
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.write("**Patients by Department**")
+
+                    department_counts = (
+                        queue_df["department"]
+                        .value_counts()
+                    )
+
+                    st.bar_chart(department_counts)
+
+                with col2:
+                    st.write("**Patient Status Distribution**")
+
+                    status_counts = (
+                        queue_df["status"]
+                        .value_counts()
+                    )
+
+                    st.bar_chart(status_counts)
+
+                # Department-wise waiting patients
+                st.write("**Waiting Patients by Department**")
+
+                waiting_by_department = (
+                    waiting_patients["department"]
+                    .value_counts()
+                )
+
+                st.bar_chart(waiting_by_department)
 
                 st.subheader("Registered Patient Queue")
                 st.dataframe(
