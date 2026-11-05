@@ -41,7 +41,8 @@ def get_supabase():
 # ---------------------------------
 # PATIENT PORTAL - AUTO REFRESH
 # ---------------------------------
-
+# Get patient ID from QR link
+patient_id = st.query_params.get("patient")
 if patient_id:
 
     st.title("🏥 OPDFlow AI")
