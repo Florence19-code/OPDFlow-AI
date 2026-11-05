@@ -190,6 +190,65 @@ with st.expander("🔐 Staff Queue Dashboard"):
                     len(queue_data)
                 )
 
+                # ---------------------------------
+                # RESHOW / REPRINT PATIENT QR CODE
+                # ---------------------------------
+
+                st.subheader("Reshow Patient QR Code")
+
+                qr_token = st.selectbox(
+                    "Select Patient Token to Reshow QR",
+                    [p["token_number"] for p in queue_data],
+                    key="qr_reprint_token"
+                )
+
+                if st.button("Show Patient QR Code"):
+
+                    selected_patient = next(
+                        p for p in queue_data
+                        if p["token_number"] == qr_token
+                    )
+
+                    patient_url = (
+                        f"{APP_URL}/?patient={selected_patient['public_id']}"
+                    )
+
+                    qr = qrcode.QRCode(
+                        box_size=8,
+                        border=4
+                    )
+
+                    qr.add_data(patient_url)
+                    qr.make(fit=True)
+
+                    qr_image = qr.make_image(
+                        fill_color="black",
+                        back_color="white"
+                    )
+
+                    qr_buffer = BytesIO()
+                    qr_image.save(qr_buffer, format="PNG")
+
+                    st.success("Original patient QR code retrieved!")
+
+                    st.write(
+                        "**Token Number:**",
+                        selected_patient["token_number"]
+                    )
+
+                    st.image(
+                        qr_buffer.getvalue(),
+                        width=250
+                    )
+
+                    st.download_button(
+                        "Download Patient QR Code",
+                        data=qr_buffer.getvalue(),
+                        file_name=f"{qr_token}.png",
+                        mime="image/png",
+                        key="download_reprinted_qr"
+                    )
+
                 st.subheader("Update Patient Status")
 
                 selected_token = st.selectbox(
