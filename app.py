@@ -126,7 +126,49 @@ st.write(
 # AUTOMATIC QUEUE POSITION UPDATE
 # ---------------------------------
 
+
+# ---------------------------------
+# AUTOMATIC QUEUE POSITION AND WAIT UPDATE
+# ---------------------------------
+
 def recalculate_queue_positions(supabase, department):
+
+    response = (
+        supabase.table("queue_entries")
+        .select(
+            "id, avg_consultation_time, doctors_available"
+        )
+        .eq("department", department)
+        .eq("status", "Waiting")
+        .order("created_at")
+        .execute()
+    )
+
+    waiting_patients = response.data or []
+
+    for position, patient in enumerate(
+        waiting_patients, start=1
+    ):
+
+        avg_time = patient.get("avg_consultation_time") or 15
+        doctors = patient.get("doctors_available") or 1
+
+        estimated_wait = round(
+            position * avg_time / max(doctors, 1)
+        )
+
+        (
+            supabase.table("queue_entries")
+            .update({
+                "queue_position": position,
+                "estimated_wait_minutes": estimated_wait
+            })
+            .eq("id", patient["id"])
+            .execute()
+        )
+
+    return len(waiting_patients)
+
 
     response = (
         supabase.table("queue_entries")
@@ -527,13 +569,15 @@ if st.button("Register Patient & Generate QR Code"):
                 "department": department,
                 "queue_position": queue_position,
                 "estimated_wait_minutes": round(waiting_time),
+                "avg_consultation_time": int(avg_consultation_time),
+"doctors_available": int(doctors_available),
                 "status": "Waiting"
             }
 
             supabase.table(
                 "queue_entries"
             ).insert(patient_record).execute()
-
+recalculate_queue_positions(supabase, department)
             # Create patient status URL
             patient_url = (
                 f"{APP_URL}/?patient={public_id}"
