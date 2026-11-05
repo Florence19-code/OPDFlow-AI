@@ -421,39 +421,42 @@ with st.expander("🔐 Staff Queue Dashboard"):
                     f"{avg_wait} minutes"
                 )
 
-                # Prepare charts
+                           # Prepare charts
                 col1, col2 = st.columns(2)
 
+                # Patients by Department
                 with col1:
                     st.write("**Patients by Department**")
 
-                    department_counts = (
-                        queue_df["department"]
-                        .value_counts()
+                    department_counts = queue_df["department"].value_counts()
+
+                    st.bar_chart(
+                        department_counts,
+                        color="#4682B4"
                     )
 
-                    st.bar_chart(department_counts)
-
+                # Patient Status Distribution
                 with col2:
                     st.write("**Patient Status Distribution**")
 
-                    status_counts = (
-                        queue_df["status"]
-                        .value_counts()
+                    status_counts = queue_df["status"].value_counts()
+
+                    st.bar_chart(
+                        status_counts,
+                        color="#9370DB"
                     )
 
-                    st.bar_chart(status_counts)
-
-                # Department-wise waiting patients
+                # Waiting Patients by Department
                 st.write("**Waiting Patients by Department**")
 
-                waiting_by_department = (
-                    waiting_patients["department"]
-                    .value_counts()
+                waiting_by_department = waiting_patients["department"].value_counts()
+
+                st.bar_chart(
+                    waiting_by_department,
+                    color="#20A38A"
                 )
 
-                st.bar_chart(waiting_by_department)
-
+                # Registered Patient Queue
                 st.subheader("Registered Patient Queue")
                 st.dataframe(
                     queue_df,
