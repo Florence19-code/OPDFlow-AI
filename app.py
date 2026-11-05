@@ -357,70 +357,56 @@ with st.expander("🔐 Staff Queue Dashboard"):
 
         if st.button("Refresh Queue", key="refresh_queue"):
             st.rerun()
+        try:
+            response = (
+                get_supabase()
+                .table("queue_entries")
+                .select(
+                    "public_id, token_number, patient_name, department, "
+                    "queue_position, estimated_wait_minutes, "
+                    "status, created_at"
+                )
+                .order("created_at")
+                .execute()
+            )
 
-       try:
-    response = (
-        get_supabase()
-        .table("queue_entries")
-        .select(
-            "public_id, token_number, patient_name, department, "
-            "queue_position, estimated_wait_minutes, "
-            "status, created_at"
-        )
-        .order("created_at")
-        .execute()
-    )
+            queue_data = response.data or []
 
-    queue_data = response.data or []
-# ---------------------------------
-    # QUEUE SUMMARY CARDS
+            # QUEUE SUMMARY CARDS
+            total_patients = len(queue_data)
 
-    total_patients = len(queue_data)
+            waiting_count = sum(
+                1 for p in queue_data if p["status"] == "Waiting"
+            )
 
-    waiting_count = sum(
-        1 for p in queue_data if p["status"] == "Waiting"
-    )
+            consultation_count = sum(
+                1 for p in queue_data if p["status"] == "In Consultation"
+            )
 
-    consultation_count = sum(
-        1 for p in queue_data if p["status"] == "In Consultation"
-    )
+            completed_count = sum(
+                1 for p in queue_data if p["status"] == "Completed"
+            )
 
-    completed_count = sum(
-        1 for p in queue_data if p["status"] == "Completed"
-    )
+            st.subheader("📊 OPD Overview")
 
-    st.subheader("📊 OPD Overview")
+            col1, col2, col3, col4 = st.columns(4)
 
-    col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Total Patients", total_patients)
 
-    with col1:
-        st.metric("Total Patients", total_patients)
+            with col2:
+                st.metric("Waiting", waiting_count)
 
-    with col2:
-        st.metric("Waiting", waiting_count)
+            with col3:
+                st.metric("In Consultation", consultation_count)
 
-    with col3:
-        st.metric("In Consultation", consultation_count)
+            with col4:
+                st.metric("Completed", completed_count)
 
-    with col4:
-        st.metric("Completed", completed_count)
-
-col1, col2, col3, col4 = st.columns(4)
-
-with col1:
-    st.metric("Total Patients", total_patients)
-
-with col2:
-    st.metric("Waiting", waiting_count)
-
-with col3:
-    st.metric("In Consultation", consultation_count)
-
-with col4:
-    st.metric("Completed", completed_count)
             if queue_data:
-
                 queue_df = pd.DataFrame(queue_data)
+
+                st.subheader("Registered Patient Queue")
 
                 st.dataframe(
                     queue_df,
@@ -428,10 +414,12 @@ with col4:
                     hide_index=True
                 )
 
-                st.metric(
-                    "Total Registered Patients",
-                    len(queue_data)
-                )
+            else:
+                st.info("No patients registered yet.")
+
+        except Exception as e:
+            st.error("Unable to load the patient queue.")
+            st.caption(str(e))
 
                 # ---------------------------------
                 # RESHOW / REPRINT PATIENT QR CODE
