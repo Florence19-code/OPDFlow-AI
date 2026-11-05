@@ -123,6 +123,36 @@ st.write(
 )
 
 # ---------------------------------
+# AUTOMATIC QUEUE POSITION UPDATE
+# ---------------------------------
+
+def recalculate_queue_positions(supabase, department):
+
+    response = (
+        supabase.table("queue_entries")
+        .select("id")
+        .eq("department", department)
+        .eq("status", "Waiting")
+        .order("created_at")
+        .execute()
+    )
+
+    waiting_patients = response.data or []
+
+    for position, patient in enumerate(
+        waiting_patients, start=1
+    ):
+
+        (
+            supabase.table("queue_entries")
+            .update({"queue_position": position})
+            .eq("id", patient["id"])
+            .execute()
+        )
+
+    return len(waiting_patients)
+
+# ---------------------------------
 # STAFF QUEUE DASHBOARD
 # ---------------------------------
 
