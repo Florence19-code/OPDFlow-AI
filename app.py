@@ -693,11 +693,69 @@ if selected_page == "Prediction & Registration":
         "Enter patient details to predict waiting time and generate a queue token."
     )
 
+    
     # MODEL INPUT
-arrival_hour = st.slider(
-    "Arrival Hour",
-    8, 19, 11
-)
+
+    patient_name = st.text_input("Patient Name")
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+
+        department = st.selectbox(
+            "Select Department",
+            [
+                "General Medicine",
+                "Cardiology",
+                "Orthopaedics",
+                "Paediatrics",
+                "Dermatology",
+                "ENT"
+            ]
+        )
+
+        arrival_hour = st.slider(
+            "Arrival Hour",
+            8, 19, 11
+        )
+
+        day_of_week = st.selectbox(
+            "Day of the Week",
+            [
+                "Monday", "Tuesday", "Wednesday",
+                "Thursday", "Friday", "Saturday", "Sunday"
+            ]
+        )
+
+        appointment_type = st.selectbox(
+            "Appointment Type",
+            ["Appointment", "Walk-in"]
+        )
+
+    with col2:
+
+        patients_waiting = st.number_input(
+            "Number of Patients Waiting",
+            min_value=0,
+            max_value=100,
+            value=10
+        )
+
+        doctors_available = st.number_input(
+            "Number of Doctors Available",
+            min_value=1,
+            max_value=10,
+            value=2
+        )
+
+        avg_consultation_time = st.number_input(
+            "Average Consultation Time (minutes)",
+            min_value=5,
+            max_value=60,
+            value=15
+        )
+
+    # CALCULATE MODEL FEATURES
 
     peak_hour = 1 if 9 <= arrival_hour <= 12 else 0
 
