@@ -37,11 +37,10 @@ def get_supabase():
         st.secrets["SUPABASE_KEY"]
     )
 
-# ---------------------------------
-# PATIENT PORTAL
-# ---------------------------------
 
-patient_id = st.query_params.get("patient")
+# ---------------------------------
+# PATIENT PORTAL - AUTO REFRESH
+# ---------------------------------
 
 if patient_id:
 
@@ -51,61 +50,73 @@ if patient_id:
     try:
         uuid.UUID(patient_id)
 
-        supabase = get_supabase()
+        @st.fragment(run_every="15s")
+        def display_patient_status():
 
-        result = supabase.rpc(
-            "get_patient_status",
-            {"p_public_id": patient_id}
-        ).execute()
+            try:
+                supabase = get_supabase()
 
-        records = result.data
+                result = supabase.rpc(
+                    "get_patient_status",
+                    {"p_public_id": patient_id}
+                ).execute()
 
-        if records:
+                records = result.data
 
-            patient = records[0]
+                if records:
 
-            st.success("Your token was found!")
+                    patient = records[0]
 
-            st.metric(
-                "Your Token Number",
-                patient["token_number"]
-            )
+                    st.success("Your token was found!")
 
-            st.metric(
-                "Queue Position",
-                patient["queue_position"]
-            )
+                    st.metric(
+                        "Your Token Number",
+                        patient["token_number"]
+                    )
 
-            st.metric(
-                "Estimated Waiting Time",
-                f'{patient["estimated_wait_minutes"]} minutes'
-            )
+                    st.metric(
+                        "Queue Position",
+                        patient["queue_position"]
+                    )
 
-            st.write(
-                "**Department:**",
-                patient["department"]
-            )
+                    st.metric(
+                        "Estimated Waiting Time",
+                        f'{patient["estimated_wait_minutes"]} minutes'
+                    )
 
-            st.write(
-                "**Status:**",
-                patient["status"]
-            )
+                    st.write(
+                        "**Department:**",
+                        patient["department"]
+                    )
 
-            if st.button("Refresh Queue Status"):
-                st.rerun()
+                    st.write(
+                        "**Status:**",
+                        patient["status"]
+                    )
 
-        else:
-            st.error("Patient token not found.")
+                    st.caption(
+                        "Queue information refreshes automatically every 15 seconds."
+                    )
 
-    except Exception as e:
-        st.error("Unable to retrieve queue status.")
-        st.caption(str(e))
+                    if st.button(
+                        "Refresh Now",
+                        key="manual_patient_refresh"
+                    ):
+                        st.rerun()
 
-    st.caption(
-        "Waiting times are estimates and may change."
-    )
+                else:
+                    st.error("Patient token not found.")
+
+            except Exception:
+                st.error("Unable to retrieve queue status. Please try again.")
+
+        display_patient_status()
+
+    except ValueError:
+        st.error("Invalid patient token link.")
 
     st.stop()
+
 
 # ---------------------------------
 # MANAGEMENT DASHBOARD
