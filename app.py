@@ -512,26 +512,6 @@ with st.expander("🔐 Staff Queue Dashboard"):
             st.error("Unable to load the patient queue.")
             st.exception(e)
 
-
-                    try:
-                        (
-                            get_supabase()
-                            .table("queue_entries")
-                            .update({"status": new_status})
-                            .eq("token_number", selected_token)
-                            .execute()
-                        )
-
-                        st.success(
-                            f"{selected_token} status updated to {new_status}!"
-                        )
-
-                        st.rerun()
-
-                    except Exception as e:
-                        st.error("Unable to update patient status.")
-                        st.exception(e)
-
             else:
                 st.info("No patients registered yet.")
 
