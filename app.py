@@ -512,12 +512,7 @@ with st.expander("🔐 Staff Queue Dashboard"):
             st.error("Unable to load the patient queue.")
             st.exception(e)
 
-            else:
-                st.info("No patients registered yet.")
-
-        except Exception as e:
-            st.error("Unable to load the patient queue.")
-            st.caption(str(e))
+        
 
 st.header("Patient Registration")
 
