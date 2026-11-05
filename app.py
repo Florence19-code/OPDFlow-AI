@@ -238,7 +238,32 @@ if patient_id:
 # ---------------------------------
 # MANAGEMENT DASHBOARD
 # ---------------------------------
+# ---------------------------------
+# SIDEBAR NAVIGATION
+# ---------------------------------
 
+with st.sidebar:
+
+    st.markdown("# 🏥 OPDFlow AI")
+    st.caption("Hospital Management Portal")
+
+    st.divider()
+
+    st.markdown("### MAIN MENU")
+
+    selected_page = st.radio(
+        "Navigate",
+        [
+            "Overview",
+            "Prediction & Registration",
+            "Staff Queue Dashboard"
+        ],
+        label_visibility="collapsed"
+    )
+
+    st.divider()
+
+    st.caption("OPDFlow AI | Academic Prototype")
 # ---------------------------------
 # DASHBOARD WELCOME BANNER
 # ---------------------------------
