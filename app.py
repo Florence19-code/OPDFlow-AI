@@ -230,52 +230,24 @@ if patient_id:
 # ---------------------------------
 
 st.markdown("""
-<div style="
-    background: linear-gradient(120deg, #E8F5F7, #F2F8FC);
-    padding: 28px 32px;
-    border-radius: 16px;
-    border: 1px solid #D5E9ED;
-    margin-bottom: 25px;
-">
+<div style="background-color:#E8F5F7;
+            padding:25px;
+            border-radius:15px;
+            border:1px solid #D5E9ED;">
 
-    <div style="
-        color: #087E8B;
-        font-size: 14px;
-        font-weight: 600;
-        letter-spacing: 1px;
-    ">
-        HOSPITAL MANAGEMENT SYSTEM
-    </div>
+<h1 style="color:#173B57;">🏥 OPDFlow AI</h1>
 
-    <h1 style="
-        color: #173B57;
-        font-size: 34px;
-        margin: 8px 0;
-    ">
-        🏥 OPDFlow AI
-    </h1>
+<h3 style="color:#426477;">
+OPD Waiting-Time Prediction & Congestion Management
+</h3>
 
-    <div style="
-        color: #426477;
-        font-size: 18px;
-        font-weight: 500;
-    ">
-        OPD Waiting-Time Prediction & Congestion Management
-    </div>
-
-    <p style="
-        color: #607D8B;
-        font-size: 14px;
-        margin-top: 12px;
-        margin-bottom: 0;
-    ">
-        Monitor patient queues, predict waiting times and
-        manage outpatient department operations efficiently.
-    </p>
+<p style="color:#607D8B;">
+Monitor patient queues, predict waiting times and manage
+outpatient department operations efficiently.
+</p>
 
 </div>
 """, unsafe_allow_html=True)
-
 # ---------------------------------
 # AUTOMATIC QUEUE POSITION UPDATE
 # ---------------------------------
