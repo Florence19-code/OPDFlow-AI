@@ -190,6 +190,41 @@ with st.expander("🔐 Staff Queue Dashboard"):
                     len(queue_data)
                 )
 
+                st.subheader("Update Patient Status")
+
+                selected_token = st.selectbox(
+                    "Select Patient Token",
+                    [p["token_number"] for p in queue_data],
+                    key="selected_patient_token"
+                )
+
+                new_status = st.selectbox(
+                    "Select New Status",
+                    ["Waiting", "In Consultation", "Completed"],
+                    key="new_patient_status"
+                )
+
+                if st.button("Update Patient Status"):
+
+                    try:
+                        (
+                            get_supabase()
+                            .table("queue_entries")
+                            .update({"status": new_status})
+                            .eq("token_number", selected_token)
+                            .execute()
+                        )
+
+                        st.success(
+                            f"{selected_token} status updated to {new_status}!"
+                        )
+
+                        st.rerun()
+
+                    except Exception as e:
+                        st.error("Unable to update patient status.")
+                        st.exception(e)
+
             else:
                 st.info("No patients registered yet.")
 
