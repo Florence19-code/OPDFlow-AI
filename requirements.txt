@@ -6,3 +6,4 @@ numpy==2.2.6
 joblib==1.4.2
 supabase==2.31.0
 qrcode[pil]
+plotly
