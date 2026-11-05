@@ -358,20 +358,20 @@ with st.expander("🔐 Staff Queue Dashboard"):
         if st.button("Refresh Queue", key="refresh_queue"):
             st.rerun()
 
-        try:
-            response = (
-                get_supabase()
-                .table("queue_entries")
-                .select(
-    "public_id, token_number, patient_name, department, "
-    "queue_position, estimated_wait_minutes, "
-    "status, created_at"
-)
-                .order("created_at")
-                .execute()
-            )
+       try:
+    response = (
+        get_supabase()
+        .table("queue_entries")
+        .select(
+            "public_id, token_number, patient_name, department, "
+            "queue_position, estimated_wait_minutes, "
+            "status, created_at"
+        )
+        .order("created_at")
+        .execute()
+    )
 
-            queue_data = response.data or []
+    queue_data = response.data or []
 # ---------------------------------
 # QUEUE SUMMARY CARDS
 # ---------------------------------
