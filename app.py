@@ -67,23 +67,24 @@ p, label {
 }
 
 /* Buttons */
+/* Light teal buttons */
 .stButton > button,
 .stDownloadButton > button {
-    background-color: #087E8B;
-    color: white;
-    border: none;
+    background-color: #BFE9E5;
+    color: #164E52;
+    border: 1px solid #A5DAD4;
     border-radius: 9px;
     padding: 0.55rem 1rem;
     font-weight: 600;
     transition: 0.2s;
 }
 
-/* Button hover */
+/* Hover effect */
 .stButton > button:hover,
 .stDownloadButton > button:hover {
-    background-color: #06636D;
-    color: white;
-    border: none;
+    background-color: #A5DAD4;
+    color: #123F43;
+    border: 1px solid #83C9C1;
 }
 
 /* Input fields */
