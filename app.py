@@ -16,7 +16,108 @@ st.set_page_config(
     page_icon="🏥",
     layout="wide"
 )
+# ---------------------------------
+# CUSTOM DASHBOARD DESIGN
+# ---------------------------------
 
+st.markdown("""
+<style>
+
+/* Main background */
+.stApp {
+    background-color: #F4F7FB;
+}
+
+/* Main content spacing */
+.block-container {
+    padding-top: 2rem;
+    padding-bottom: 2rem;
+    max-width: 1200px;
+}
+
+/* Main headings */
+h1 {
+    color: #12304A !important;
+    font-weight: 750 !important;
+}
+
+h2, h3 {
+    color: #174A68 !important;
+    font-weight: 650 !important;
+}
+
+/* Paragraph text */
+p, label {
+    color: #405466;
+}
+
+/* Metric cards */
+[data-testid="stMetric"] {
+    background-color: white;
+    border: 1px solid #E2EAF1;
+    padding: 20px;
+    border-radius: 14px;
+    box-shadow: 0 3px 12px rgba(20, 50, 80, 0.05);
+}
+
+/* Metric values */
+[data-testid="stMetricValue"] {
+    color: #087E8B;
+    font-weight: 700;
+}
+
+/* Buttons */
+.stButton > button,
+.stDownloadButton > button {
+    background-color: #087E8B;
+    color: white;
+    border: none;
+    border-radius: 9px;
+    padding: 0.55rem 1rem;
+    font-weight: 600;
+    transition: 0.2s;
+}
+
+/* Button hover */
+.stButton > button:hover,
+.stDownloadButton > button:hover {
+    background-color: #06636D;
+    color: white;
+    border: none;
+}
+
+/* Input fields */
+div[data-baseweb="input"] input,
+div[data-baseweb="select"] > div {
+    border-radius: 8px;
+}
+
+/* Expanders */
+[data-testid="stExpander"] {
+    background-color: white;
+    border: 1px solid #E2EAF1;
+    border-radius: 12px;
+}
+
+/* Data tables */
+[data-testid="stDataFrame"] {
+    border: 1px solid #E2EAF1;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* Info and success messages */
+[data-testid="stAlert"] {
+    border-radius: 10px;
+}
+
+/* Footer caption */
+.stCaption {
+    color: #718096;
+}
+
+</style>
+""", unsafe_allow_html=True)
 APP_URL = "https://opdflow-ai-9fduheria83du5dof2vbi8.streamlit.app"
 
 # ---------------------------------
