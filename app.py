@@ -366,7 +366,8 @@ def recalculate_queue_positions(supabase, department):
 if "admin_authenticated" not in st.session_state:
     st.session_state.admin_authenticated = False
 
-with st.expander("🔐 Staff Queue Dashboard"):
+if selected_page == "Staff Queue Dashboard":
+    with st.expander("🔐 Staff Queue Dashboard"):
 
     if not st.session_state.admin_authenticated:
 
