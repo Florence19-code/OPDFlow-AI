@@ -403,7 +403,7 @@ with st.expander("🔐 Staff Queue Dashboard"):
             with col4:
                 st.metric("Completed", completed_count)
 
-            if queue_data:
+                        if queue_data:
                 queue_df = pd.DataFrame(queue_data)
 
                 st.subheader("Registered Patient Queue")
@@ -414,17 +414,7 @@ with st.expander("🔐 Staff Queue Dashboard"):
                     hide_index=True
                 )
 
-            else:
-                st.info("No patients registered yet.")
-
-        except Exception as e:
-            st.error("Unable to load the patient queue.")
-            st.caption(str(e))
-
-                # ---------------------------------
-                # RESHOW / REPRINT PATIENT QR CODE
-                # ---------------------------------
-
+                # RESHOW PATIENT QR CODE
                 st.subheader("Reshow Patient QR Code")
 
                 qr_token = st.selectbox(
@@ -434,7 +424,6 @@ with st.expander("🔐 Staff Queue Dashboard"):
                 )
 
                 if st.button("Show Patient QR Code"):
-
                     selected_patient = next(
                         p for p in queue_data
                         if p["token_number"] == qr_token
@@ -444,11 +433,7 @@ with st.expander("🔐 Staff Queue Dashboard"):
                         f"{APP_URL}/?patient={selected_patient['public_id']}"
                     )
 
-                    qr = qrcode.QRCode(
-                        box_size=8,
-                        border=4
-                    )
-
+                    qr = qrcode.QRCode(box_size=8, border=4)
                     qr.add_data(patient_url)
                     qr.make(fit=True)
 
@@ -461,16 +446,8 @@ with st.expander("🔐 Staff Queue Dashboard"):
                     qr_image.save(qr_buffer, format="PNG")
 
                     st.success("Original patient QR code retrieved!")
-
-                    st.write(
-                        "**Token Number:**",
-                        selected_patient["token_number"]
-                    )
-
-                    st.image(
-                        qr_buffer.getvalue(),
-                        width=250
-                    )
+                    st.write("Token Number:", selected_patient["token_number"])
+                    st.image(qr_buffer.getvalue(), width=250)
 
                     st.download_button(
                         "Download Patient QR Code",
@@ -479,7 +456,6 @@ with st.expander("🔐 Staff Queue Dashboard"):
                         mime="image/png",
                         key="download_reprinted_qr"
                     )
-
                 st.subheader("Update Patient Status")
 
                 selected_token = st.selectbox(
