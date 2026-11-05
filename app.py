@@ -457,9 +457,66 @@ with st.expander("🔐 Staff Queue Dashboard"):
                 )
 
                 # Registered Patient Queue
+                   # SEARCH AND FILTER PATIENTS
+                st.subheader("🔍 Search and Filter Patients")
+
+                search_text = st.text_input(
+                    "Search by token, patient name or department",
+                    placeholder="Enter token number, name or department..."
+                )
+
+                filter_col1, filter_col2 = st.columns(2)
+
+                with filter_col1:
+                    selected_department = st.selectbox(
+                        "Filter by Department",
+                        ["All"] + sorted(
+                            queue_df["department"].dropna().unique().tolist()
+                        ),
+                        key="filter_department"
+                    )
+
+                with filter_col2:
+                    selected_status = st.selectbox(
+                        "Filter by Status",
+                        ["All", "Waiting", "In Consultation", "Completed"],
+                        key="filter_status"
+                    )
+
+                filtered_df = queue_df.copy()
+
+                if search_text:
+                    search_mask = (
+                        filtered_df["token_number"].astype(str).str.contains(
+                            search_text, case=False, na=False
+                        )
+                        | filtered_df["patient_name"].astype(str).str.contains(
+                            search_text, case=False, na=False
+                        )
+                        | filtered_df["department"].astype(str).str.contains(
+                            search_text, case=False, na=False
+                        )
+                    )
+                    filtered_df = filtered_df[search_mask]
+
+                if selected_department != "All":
+                    filtered_df = filtered_df[
+                        filtered_df["department"] == selected_department
+                    ]
+
+                if selected_status != "All":
+                    filtered_df = filtered_df[
+                        filtered_df["status"] == selected_status
+                    ]
+
                 st.subheader("Registered Patient Queue")
+
+                st.caption(
+                    f"Showing {len(filtered_df)} of {len(queue_df)} patients"
+                )
+
                 st.dataframe(
-                    queue_df,
+                    filtered_df,
                     use_container_width=True,
                     hide_index=True
                 )
