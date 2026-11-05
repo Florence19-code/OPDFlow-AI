@@ -122,6 +122,81 @@ st.write(
     "to predict the patient's expected waiting time."
 )
 
+# ---------------------------------
+# STAFF QUEUE DASHBOARD
+# ---------------------------------
+
+if "admin_authenticated" not in st.session_state:
+    st.session_state.admin_authenticated = False
+
+with st.expander("🔐 Staff Queue Dashboard"):
+
+    if not st.session_state.admin_authenticated:
+
+        admin_password = st.text_input(
+            "Enter Staff Password",
+            type="password",
+            key="admin_password_input"
+        )
+
+        if st.button("Staff Login", key="staff_login"):
+
+            if admin_password == st.secrets["ADMIN_PASSWORD"]:
+                st.session_state.admin_authenticated = True
+                st.rerun()
+            else:
+                st.error("Incorrect password.")
+
+    else:
+
+        st.success("Staff login successful!")
+
+        if st.button("Staff Logout", key="staff_logout"):
+            st.session_state.admin_authenticated = False
+            st.rerun()
+
+        st.subheader("Registered Patient Queue")
+
+        if st.button("Refresh Queue", key="refresh_queue"):
+            st.rerun()
+
+        try:
+            response = (
+                get_supabase()
+                .table("queue_entries")
+                .select(
+                    "token_number, patient_name, department, "
+                    "queue_position, estimated_wait_minutes, "
+                    "status, created_at"
+                )
+                .order("created_at")
+                .execute()
+            )
+
+            queue_data = response.data or []
+
+            if queue_data:
+
+                queue_df = pd.DataFrame(queue_data)
+
+                st.dataframe(
+                    queue_df,
+                    use_container_width=True,
+                    hide_index=True
+                )
+
+                st.metric(
+                    "Total Registered Patients",
+                    len(queue_data)
+                )
+
+            else:
+                st.info("No patients registered yet.")
+
+        except Exception as e:
+            st.error("Unable to load the patient queue.")
+            st.caption(str(e))
+
 st.header("Patient Registration")
 
 patient_name = st.text_input("Patient Name")
