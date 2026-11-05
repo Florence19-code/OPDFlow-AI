@@ -577,7 +577,7 @@ if st.button("Register Patient & Generate QR Code"):
             supabase.table(
                 "queue_entries"
             ).insert(patient_record).execute()
-recalculate_queue_positions(supabase, department)
+            recalculate_queue_positions(supabase, department)
             # Create patient status URL
             patient_url = (
                 f"{APP_URL}/?patient={public_id}"
