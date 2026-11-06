@@ -27,9 +27,9 @@ st.markdown("""
 [data-testid="stAppViewContainer"] {
     background: linear-gradient(
         135deg,
-        #F4F8FB 0%,
-        #EAF2F8 50%,
-        #DCEBF2 100%
+        #F7FAF7 0%,
+        #F1F6F2 50%,
+        #E2EEE7 100%
     ) !important;
 }
 
@@ -42,8 +42,6 @@ st.markdown("""
 [data-testid="stHeader"] {
     background: transparent !important;
 }
-
-
 /* Main dashboard content */
 .block-container {
     padding-top: 2rem;
