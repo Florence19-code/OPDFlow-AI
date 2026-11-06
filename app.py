@@ -268,6 +268,7 @@ with st.sidebar:
 # DASHBOARD WELCOME BANNER
 # ---------------------------------
 if selected_page == "Overview":
+    
     st.markdown("""
     <div style="background-color:#E8F5F7;
                 padding:25px;
@@ -287,6 +288,78 @@ if selected_page == "Overview":
 
     </div>
     """, unsafe_allow_html=True)
+    
+    # HOME PAGE FEATURES
+
+    st.write("")
+    st.subheader("✨ Explore OPDFlow AI")
+
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        with st.container(border=True):
+            st.markdown("### 🧠 AI Prediction")
+            st.write(
+                "Predict patient waiting times using "
+                "a Random Forest Machine Learning model."
+            )
+
+    with col2:
+        with st.container(border=True):
+            st.markdown("### 👥 Queue Management")
+            st.write(
+                "Manage patient tokens, queue positions "
+                "and consultation status."
+            )
+
+    with col3:
+        with st.container(border=True):
+            st.markdown("### 📱 QR Tracking")
+            st.write(
+                "Generate QR codes and allow patients "
+                "to check their queue status."
+            )
+
+    # HOW IT WORKS
+
+    st.write("")
+    st.subheader("⚙️ How OPDFlow AI Works")
+
+    step1, step2, step3 = st.columns(3)
+
+    with step1:
+        st.markdown("#### 01. Patient Registration")
+        st.write(
+            "Enter patient details and select the "
+            "required department."
+        )
+
+    with step2:
+        st.markdown("#### 02. AI Prediction")
+        st.write(
+            "The Random Forest model estimates "
+            "the patient's waiting time."
+        )
+
+    with step3:
+        st.markdown("#### 03. Queue Tracking")
+        st.write(
+            "Generate patient tokens and QR codes "
+            "to monitor queue status."
+        )
+
+    # PROJECT HIGHLIGHTS
+
+    st.write("")
+    st.subheader("🏥 Project Highlights")
+
+    st.info(
+        "OPDFlow AI combines Machine Learning, digital "
+        "patient registration, QR-based tracking and "
+        "queue analytics to support efficient outpatient "
+        "department management."
+    )
+
 # ---------------------------------
 # AUTOMATIC QUEUE POSITION UPDATE
 # ---------------------------------
