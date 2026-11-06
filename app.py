@@ -23,6 +23,26 @@ st.set_page_config(
 st.markdown("""
 <style>
 
+/* WHOLE WEBSITE BACKGROUND */
+[data-testid="stAppViewContainer"] {
+    background: linear-gradient(
+        135deg,
+        #F4F8FB 0%,
+        #EAF2F8 50%,
+        #DCEBF2 100%
+    ) !important;
+}
+
+/* MAIN CONTENT AREA */
+[data-testid="stMain"] {
+    background: transparent !important;
+}
+
+/* TOP HEADER */
+[data-testid="stHeader"] {
+    background: transparent !important;
+}
+
 
 /* Main dashboard content */
 .block-container {
