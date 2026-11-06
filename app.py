@@ -41,7 +41,7 @@ st.markdown("""
 /* TOP HEADER */
 [data-testid="stHeader"] {
     background: transparent !important;
-}
+} 
 /* Main dashboard content */
 .block-container {
     padding-top: 2rem;
